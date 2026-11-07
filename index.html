@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="CryptoGuard — Protección criptográfica de credenciales mediante AES-256-GCM y RSA-2048 OAEP-SHA256 con Web Crypto API">
+    <title>CryptoGuard — Cryptography & Security Lab</title>
+
+    <link rel="icon" type="image/svg+xml" href="assets/images/logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<div class="cg-wrapper">
+    <!-- Barra lateral de navegación (Inicio, Laboratorio, Historial) -->
+    <aside class="cg-sidebar" id="cgSidebar">
+        <a href="#inicio" class="cg-brand" data-nav-target="section-inicio">
+            <img src="assets/images/logo.svg" alt="CryptoGuard Logo" class="cg-brand-logo">
+            <div>
+                <h1 class="cg-brand-title">CryptoGuard</h1>
+                <p class="cg-brand-subtitle">Security Lab</p>
+            </div>
+        </a>
+
+        <nav class="cg-nav">
+            <button type="button" class="cg-nav-link active" data-nav-target="section-inicio">
+                <i class="bi bi-house-door-fill"></i>
+                <span>Inicio</span>
+            </button>
+
+            <button type="button" class="cg-nav-link" data-nav-target="section-laboratorio">
+                <i class="bi bi-shield-lock-fill"></i>
+                <span>Laboratorio</span>
+            </button>
+
+            <button type="button" class="cg-nav-link" data-nav-target="section-historial">
+                <i class="bi bi-clock-history"></i>
+                <span>Historial</span>
+            </button>
+        </nav>
+
+        <div class="cg-sidebar-footer">
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="d-inline-block rounded-circle" style="width: 8px; height: 8px; background-color: var(--cg-success);"></span>
+                <span class="fw-semibold text-light">Web Crypto API Nativa</span>
+            </div>
+            <div class="font-mono" style="font-size: 0.72rem;">Claves en memoria de sesión</div>
+        </div>
+    </aside>
+
+    <!-- Contenido principal -->
+    <div class="cg-main">
+        <header class="cg-topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" class="btn btn-sm btn-cg-outline d-lg-none" id="sidebarToggleBtn" aria-label="Menú">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
+                <h2 class="h6 mb-0 fw-semibold text-light" id="pageTitle">Inicio</h2>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <span class="cg-badge-success d-none d-sm-inline-flex" id="topbarStatusBadge">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>AES-256-GCM · RSA-2048</span>
+                </span>
+                <button type="button" class="btn btn-sm btn-cg-primary" data-nav-target="section-laboratorio">
+                    <i class="bi bi-shield-shaded me-1"></i> Laboratorio
+                </button>
+            </div>
+        </header>
+
+        <main class="p-3 p-md-4 flex-grow-1">
+            <div class="container-fluid px-0" style="max-width: 1180px;">
+                <!-- Contenedor de alertas -->
+                <div id="alertContainer"></div>
+
+                <!-- ========================================================= -->
+                <!-- SECCIÓN 1: INICIO                                         -->
+                <!-- ========================================================= -->
+                <section id="section-inicio" class="cg-section active">
+                    <div class="cg-card mb-4">
+                        <div class="cg-card-body p-4">
+                            <div class="row align-items-center g-4">
+                                <div class="col-lg-8">
+                                    <h3 class="h4 fw-bold text-light mb-2">Protección de Credenciales con AES y RSA</h3>
+                                    <p class="mb-3" style="color: var(--cg-text-muted);">
+                                        Cifrado simétrico <strong>AES-256-GCM</strong> para el usuario y cifrado asimétrico <strong>RSA-2048 OAEP-SHA256</strong> para la contraseña mediante Web Crypto API, con descifrado y verificación de coincidencia.
+                                    </p>
+                                    <button type="button" class="btn btn-cg-primary" data-nav-target="section-laboratorio">
+                                        <i class="bi bi-shield-lock-fill me-2"></i>Abrir Laboratorio
+                                    </button>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="p-3 rounded-3" style="background-color: var(--cg-bg-code); border: 1px solid var(--cg-border);">
+                                        <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom" style="border-color: var(--cg-border) !important;">
+                                            <span class="small fw-semibold text-light">Estado de Servicios</span>
+                                            <span class="cg-badge-success" id="homeServiceBadge">
+                                                <i class="bi bi-check-circle-fill"></i> Activo
+                                            </span>
+                                        </div>
+                                        <div class="small d-flex justify-content-between py-1">
+                                            <span style="color: var(--cg-text-muted);">Usuario (Simétrico)</span>
+                                            <span class="font-mono text-info">AES-256-GCM</span>
+                                        </div>
+                                        <div class="small d-flex justify-content-between py-1">
+                                            <span style="color: var(--cg-text-muted);">Contraseña (Asimétrico)</span>
+                                            <span class="font-mono text-info">RSA-2048 OAEP</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cg-card">
+                        <div class="cg-card-header">
+                            <h3 class="h6 mb-0 fw-bold text-light">Últimas Operaciones (<span id="homeTotalCount">0</span>)</h3>
+                            <button type="button" class="btn btn-sm btn-cg-outline" data-nav-target="section-historial">
+                                Ver historial
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table cg-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Operación</th>
+                                        <th>Algoritmo</th>
+                                        <th>Estado</th>
+                                        <th>Tiempo</th>
+                                        <th>Fecha y Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="homeRecentBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4" style="color: var(--cg-text-muted);">
+                                            Sin operaciones registradas en la sesión actual.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- SECCIÓN 2: LABORATORIO CRIPTOGRÁFICO                      -->
+                <!-- ========================================================= -->
+                <section id="section-laboratorio" class="cg-section">
+                    <div class="cg-card mb-4">
+                        <div class="cg-card-header flex-wrap">
+                            <h3 class="h6 mb-0 fw-bold text-light">Credenciales</h3>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-sm btn-cg-outline" id="loadSampleBtn">
+                                    <i class="bi bi-lightning-charge me-1 text-info"></i> Cargar datos ficticios
+                                </button>
+                                <button type="button" class="btn btn-sm btn-cg-outline" id="resetLabBtn">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Nueva operación
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="cg-card-body">
+                            <form id="encryptForm" novalidate>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="usernameInput" class="form-label d-flex align-items-center justify-content-between mb-1">
+                                            <span class="fw-semibold text-light">Usuario</span>
+                                            <span class="cg-badge-blue">AES-256-GCM</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="usernameInput"
+                                            class="form-control cg-input font-mono"
+                                            placeholder="Ingrese el usuario"
+                                            maxlength="255"
+                                            required
+                                            autocomplete="off"
+                                        >
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="passwordInput" class="form-label d-flex align-items-center justify-content-between mb-1">
+                                            <span class="fw-semibold text-light">Contraseña</span>
+                                            <span class="cg-badge-blue">RSA-2048 OAEP-SHA256</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <input
+                                                type="password"
+                                                id="passwordInput"
+                                                class="form-control cg-input font-mono"
+                                                placeholder="Ingrese la contraseña (máx. 190 bytes)"
+                                                required
+                                                autocomplete="new-password"
+                                            >
+                                            <button class="btn btn-cg-outline" type="button" id="togglePasswordInputBtn" title="Mostrar u ocultar contraseña">
+                                                <i class="bi bi-eye" id="togglePasswordInputIcon"></i>
+                                            </button>
+                                        </div>
+                                        <div class="d-flex justify-content-end mt-1 small" style="color: var(--cg-text-muted); font-size: 0.74rem;">
+                                            <span id="passwordByteCounter" class="font-mono">0 / 190 bytes UTF-8</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3 d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-cg-primary px-4">
+                                        <i class="bi bi-lock-fill me-1"></i> Proteger credenciales
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Contenedor de Resultados de Cifrado y Descifrado -->
+                    <div id="encryptionResultsContainer" class="d-none">
+                        <div class="row g-4 mb-4">
+                            <!-- Tarjeta 1: Usuario · AES-256-GCM -->
+                            <div class="col-lg-6">
+                                <div class="cg-card h-100">
+                                    <div class="cg-card-header">
+                                        <h4 class="h6 mb-0 fw-bold text-light">Usuario · AES-256-GCM</h4>
+                                        <span class="cg-badge-success"><i class="bi bi-check-circle-fill"></i> Cifrado</span>
+                                    </div>
+
+                                    <div class="cg-card-body">
+                                        <div class="mb-3">
+                                            <div class="cg-crypto-label">
+                                                <span>Valor original del usuario</span>
+                                                <button type="button" class="btn-cg-copy" data-copy-target="aesOriginalBox">
+                                                    <i class="bi bi-clipboard"></i> Copiar
+                                                </button>
+                                            </div>
+                                            <div class="cg-crypto-box" id="aesOriginalBox"></div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="cg-crypto-label">
+                                                <span>Algoritmo utilizado</span>
+                                            </div>
+                                            <div class="cg-crypto-box text-light" id="aesAlgorithmBox">AES-256-GCM</div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="cg-crypto-label">
+                                                <span>Texto cifrado (Base64)</span>
+                                                <button type="button" class="btn-cg-copy" data-copy-target="aesCiphertextBox">
+                                                    <i class="bi bi-clipboard"></i> Copiar
+                                                </button>
+                                            </div>
+                                            <div class="cg-crypto-box text-info" id="aesCiphertextBox"></div>
+                                        </div>
+
+                                        <div class="row g-2 mb-3">
+                                            <div class="col-sm-6">
+                                                <div class="cg-crypto-label">
+                                                    <span>IV (12 bytes · Base64)</span>
+                                                    <button type="button" class="btn-cg-copy" data-copy-target="aesIvBox">
+                                                        <i class="bi bi-clipboard"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="cg-crypto-box" id="aesIvBox"></div>
+                                            </div>
+
+                                            <div class="col-sm-6">
+                                                <div class="cg-crypto-label">
+                                                    <span>Authentication Tag (128b)</span>
+                                                    <button type="button" class="btn-cg-copy" data-copy-target="aesTagBox">
+                                                        <i class="bi bi-clipboard"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="cg-crypto-box" id="aesTagBox"></div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="cg-crypto-label">
+                                                <span>Resultado del descifrado</span>
+                                            </div>
+                                            <div class="cg-crypto-box" id="aesDecryptedBox" style="color: var(--cg-text-muted);">Pendiente de descifrar</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tarjeta 2: Contraseña · RSA-2048 OAEP-SHA256 -->
+                            <div class="col-lg-6">
+                                <div class="cg-card h-100">
+                                    <div class="cg-card-header">
+                                        <h4 class="h6 mb-0 fw-bold text-light">Contraseña · RSA-2048 OAEP-SHA256</h4>
+                                        <span class="cg-badge-success"><i class="bi bi-check-circle-fill"></i> Cifrado</span>
+                                    </div>
+
+                                    <div class="cg-card-body">
+                                        <div class="mb-3">
+                                            <div class="cg-crypto-label">
+                                                <span>Valor original de la contraseña</span>
+                                                <div class="d-flex gap-1">
+                                                    <button type="button" class="btn-cg-copy" id="toggleRsaOriginalBtn" data-toggle-reveal="rsaOriginalBox">
+                                                        <i class="bi bi-eye"></i> Mostrar
+                                                    </button>
+                                                    <button type="button" class="btn-cg-copy" data-copy-target="rsaOriginalBox">
+                                                        <i class="bi bi-clipboard"></i> Copiar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="cg-crypto-box" id="rsaOriginalBox" data-is-masked="true"></div>
+                                        </div>
+
+                                        <div class="row g-2 mb-3">
+                                            <div class="col-sm-7">
+                                                <div class="cg-crypto-label">
+                                                    <span>Algoritmo utilizado</span>
+                                                </div>
+                                                <div class="cg-crypto-box text-light" id="rsaAlgorithmBox">RSA-2048 OAEP-SHA256</div>
+                                            </div>
+                                            <div class="col-sm-5">
+                                                <div class="cg-crypto-label">
+                                                    <span>Tamaño de clave</span>
+                                                </div>
+                                                <div class="cg-crypto-box text-info" id="rsaKeySizeBox">2048 bits</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="cg-crypto-label">
+                                                <span>Texto cifrado (Base64)</span>
+                                                <button type="button" class="btn-cg-copy" data-copy-target="rsaCiphertextBox">
+                                                    <i class="bi bi-clipboard"></i> Copiar
+                                                </button>
+                                            </div>
+                                            <div class="cg-crypto-box text-info" id="rsaCiphertextBox" style="max-height: 118px; overflow-y: auto;"></div>
+                                        </div>
+
+                                        <div>
+                                            <div class="cg-crypto-label">
+                                                <span>Resultado del descifrado</span>
+                                                <button type="button" class="btn-cg-copy d-none" id="toggleRsaDecryptedBtn" data-toggle-reveal="rsaDecryptedBox">
+                                                    <i class="bi bi-eye-slash"></i> Ocultar
+                                                </button>
+                                            </div>
+                                            <div class="cg-crypto-box" id="rsaDecryptedBox" style="color: var(--cg-text-muted);">Pendiente de descifrar</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de Descifrar y Verificar -->
+                        <div class="mb-4 d-flex justify-content-end">
+                            <button type="button" class="btn btn-cg-success px-4" id="decryptVerifyBtn">
+                                <i class="bi bi-unlock-fill me-1"></i> Descifrar y verificar
+                            </button>
+                        </div>
+
+                        <!-- Indicador Visual del Resultado de Verificación -->
+                        <div id="verificationBanner" class="d-none"></div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- SECCIÓN 3: HISTORIAL DE OPERACIONES                       -->
+                <!-- ========================================================= -->
+                <section id="section-historial" class="cg-section">
+                    <div class="cg-card mb-4 p-3">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label for="filterOperationType" class="form-label small text-muted mb-1">Tipo de operación</label>
+                                <select id="filterOperationType" class="form-select form-select-sm cg-input">
+                                    <option value="">Todas</option>
+                                    <option value="ENCRYPT">Cifrado (ENCRYPT)</option>
+                                    <option value="DECRYPT">Descifrado (DECRYPT)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="filterAlgorithm" class="form-label small text-muted mb-1">Algoritmo</label>
+                                <select id="filterAlgorithm" class="form-select form-select-sm cg-input">
+                                    <option value="">Todos</option>
+                                    <option value="AES-256-GCM">AES-256-GCM</option>
+                                    <option value="RSA-2048 OAEP-SHA256">RSA-2048 OAEP-SHA256</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="filterStatus" class="form-label small text-muted mb-1">Estado</label>
+                                <select id="filterStatus" class="form-select form-select-sm cg-input">
+                                    <option value="">Todos</option>
+                                    <option value="SUCCESS">Correcto (SUCCESS)</option>
+                                    <option value="ERROR">Error (ERROR)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-1 d-grid">
+                                <button type="button" class="btn btn-sm btn-cg-outline" id="clearFiltersBtn" title="Limpiar filtros">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cg-card">
+                        <div class="cg-card-header">
+                            <h3 class="h6 mb-0 fw-bold text-light">Registros de la Sesión (<span id="historyTotalCount">0</span>)</h3>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table cg-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tipo de Operación</th>
+                                        <th>Algoritmo</th>
+                                        <th>Estado</th>
+                                        <th>Tiempo</th>
+                                        <th>Fecha y Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4" style="color: var(--cg-text-muted);">
+                                            Sin operaciones registradas en la sesión actual.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="assets/js/crypto.js"></script>
+<script src="assets/js/history.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
+
